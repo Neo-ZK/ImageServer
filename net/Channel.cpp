@@ -42,7 +42,7 @@ void ZK_ImageServer::net::Channel::removeFromLoop()
 void ZK_ImageServer::net::Channel::handleEvent()
 {
     isEventHanding_ = true;
-    LOG_TRACE<<"Channel begin to handleEvent,revent num is "<< revent_;
+    //LOG_TRACE<<"Channel begin to handleEvent,revent num is "<< revent_;
     if(revent_ & EPOLLIN)
     {
         LOG_TRACE<<"call read callback ";
@@ -90,6 +90,8 @@ const char* ZK_ImageServer::net::Channel::getEventString()
             return "ReadEvent";
         case EPOLLOUT:
             return "WriteEvent";
+        case EPOLLHUP:
+            return "HubEvent";
         default:
             return "unknow event";
     }

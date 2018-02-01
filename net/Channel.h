@@ -33,6 +33,7 @@ class Channel
         void setRevent(int ev){revent_ = ev;}
         void disableWriting(){event_ &= ~WriteEvent;}
         void disableAll(){event_ = NoneEvent;update();}
+
         //handle event
         void handleEvent();
         //void handleEventWithGuard();
@@ -43,6 +44,7 @@ class Channel
         int getEvent(){return event_;}
         bool isNoneEvent(){return event_ == NoneEvent;}
         bool isWriting(){return event_ == WriteEvent;}
+        bool isReading(){return event_ == ReadEvent;}
 
         const char* getEventString();
 
@@ -61,7 +63,6 @@ class Channel
         static const int NoneEvent;
         static const int ReadEvent;
         static const int WriteEvent;
-
         //std::weak_ptr<void> tied_;
 
         EventLoop* ownerLoop_;

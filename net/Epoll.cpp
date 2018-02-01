@@ -67,7 +67,6 @@ void ZK_ImageServer::net::Epoll::removeChannel(Channel* channel)
     assert(n == 1);
     update(EPOLL_CTL_DEL,channel);
     channel->setIndex(ChannelNew);
-
 }
 
 
@@ -77,7 +76,7 @@ void ZK_ImageServer::net::Epoll::update(int operation,Channel* channel)
     event.events = channel->getEvent();
     event.data.ptr = channel;
     int fd = channel->getFd();
-    LOG_INFO<<"epoll operation"<<operationToString(operation)<<" of fd: "<<fd <<" Channel event is: "<<channel->getEventString();
+    LOG_INFO<<"epoll operation "<<operationToString(operation)<<" of fd: "<<fd <<" Channel event is: "<<channel->getEventString();
     if(epoll_ctl(epollfd_,operation,fd,&event) < 0)
     {
         LOG_ERROR << "epoll ctl error,operation is "<< operationToString(operation) <<" fd is: "<<fd;

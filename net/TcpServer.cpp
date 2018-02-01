@@ -1,6 +1,8 @@
 #include "TcpServer.h"
 
-ZK_ImageServer::net::TcpServer::TcpServer(CallBackFun newConnCB,MessageCallBackFun messageCB,int threadNum,EventLoop* baseLoop):
+ZK_ImageServer::net::TcpServer::TcpServer(CallBackFun newConnCB,
+                                          MessageCallBackFun messageCB,
+                                          int threadNum,EventLoop* baseLoop):
 baseLoop_(baseLoop),
 newConnCB_(newConnCB),
 messageCB_(messageCB),
@@ -31,5 +33,16 @@ void ZK_ImageServer::net::TcpServer::newConnection(int connfd)
     connectionMap_[connfd] = tcpConnectionPtr;
     tcpConnectionPtr->setNewConnectionCB(newConnCB_);
     tcpConnectionPtr->setMessageCallBackFun(messageCB_);
+    tcpConnectionPtr->setCloseCallBackFun(std::bind(&TcpServer::destroyConnection,this,std::placeholders::_1));
     ioLoop->runInLoop(std::bind(&TcpConnection::connEstablished,tcpConnectionPtr));
+}
+
+void ZK_ImageServer::net::TcpServer::destroyConnection(TcpConnectionPtr conn)
+{
+    int fd = conn->getConnfd();
+    LOG_INFO << "remove connection from TcpServer,connection fd is "<< fd;
+    int n = connectionMap_.erase(fd);
+    assert(n == 1);
+    EventLoop* ioLoop = conn->getOwnerLoop();
+    ioLoop->queueInLoop(std::bind(&TcpConnection::connDestroyed,conn));
 }

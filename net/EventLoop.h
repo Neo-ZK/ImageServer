@@ -30,6 +30,7 @@ class EventLoop
         void loop();
 
         void runInLoop(CallBackFun cb);
+        void queueInLoop(CallBackFun cb);
         void wakeup();
 
         void quit();

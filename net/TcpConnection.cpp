@@ -7,6 +7,7 @@ ownerLoop_(ownerLoop),
 channel_(new Channel(ownerLoop_,fd)),
 newConnectionCB_(NULL),
 messageRecvCB_(NULL),
+writeCompleteCB_(NULL),
 closeCB_(NULL),
 inputBuffer_(),
 outputBuffer_()
@@ -31,6 +32,15 @@ void ZK_ImageServer::net::TcpConnection::sendInLoop(void* data,int len)
     if(!channel_->isWriting())
     {
         channel_->enableWrite();
+    }
+}
+
+void ZK_ImageServer::net::TcpConnection::readInLoop()
+{
+    assert(ownerLoop_->isInLoopThread());
+    if(!channel_->isReading())
+    {
+        channel_->enableRead();
     }
 }
 
@@ -69,8 +79,15 @@ void ZK_ImageServer::net::TcpConnection::handleWrite()
             outputBuffer_.retrieve(sendLen);
             if(outputBuffer_.readableByte() == 0)
             {
-                channel_->disableWriting();
+                //channel_->disableWriting();
+                channel_->enableRead();
             }
+
+            if(writeCompleteCB_)
+            {
+                writeCompleteCB_(shared_from_this());
+            }
+
         }
         else
         {
@@ -87,6 +104,11 @@ void ZK_ImageServer::net::TcpConnection::handleWrite()
 
 void ZK_ImageServer::net::TcpConnection::handleClose()
 {
+    assert(ownerLoop_->isInLoopThread());
+    channel_->disableAll();
+    //TcpConnectionPtr guardThis(shared_from_this());
+    closeCB_(shared_from_this());
+
 }
 
 void ZK_ImageServer::net::TcpConnection::handleError()
@@ -106,7 +128,6 @@ void ZK_ImageServer::net::TcpConnection::connEstablished()
 
 void ZK_ImageServer::net::TcpConnection::connDestroyed()
 {
-    assert(ownerLoop_->isInLoopThread());
     if(state_ == Connected)
     {
         setState(Disconnected);

@@ -88,12 +88,17 @@ void ZK_ImageServer::net::EventLoop::runInLoop(CallBackFun cb)
     }
     else
     {
-        MutexGuard mutexGurad(mutex_);
-        pendingFuncList_.push_back(cb);
-        if(!isInLoopThread() || callPendingFuncTag_)
-        {
-            wakeup();
-        }
+        queueInLoop(cb);
+    }
+}
+
+void ZK_ImageServer::net::EventLoop::queueInLoop(CallBackFun cb)
+{
+    MutexGuard mutexGurad(mutex_);
+    pendingFuncList_.push_back(cb);
+    if(!isInLoopThread() || callPendingFuncTag_)
+    {
+        wakeup();
     }
 }
 

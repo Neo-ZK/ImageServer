@@ -21,6 +21,7 @@ class TcpConnection:public std::enable_shared_from_this<TcpConnection>
         typedef std::function<void(TcpConnectionPtr)> CallBackFun;
         typedef std::function<void(TcpConnectionPtr,NetBuffer*)> MessageCallBackFun;
 
+
         TcpConnection(EventLoop* ownerLoop,int fd);
         ~TcpConnection();
         void handleRead();
@@ -29,14 +30,21 @@ class TcpConnection:public std::enable_shared_from_this<TcpConnection>
         void handleError();
 
         void setNewConnectionCB(CallBackFun newConnectionCB){newConnectionCB_ = newConnectionCB;}
+        void setWriteCompleteCB(CallBackFun writeCompleteCB){writeCompleteCB_ = writeCompleteCB;}
         void setMessageCallBackFun(MessageCallBackFun messageRecvCB){messageRecvCB_ = messageRecvCB;}
+        void setCloseCallBackFun(CallBackFun closeCB){closeCB_ = closeCB;}
 
         void connEstablished();
         void connDestroyed();
 
         void sendInLoop(void* data,int len);
+        void readInLoop();
+
 
         void setState(int state){state_ = state;}
+
+        int getConnfd(){return connfd_;}
+        EventLoop*  getOwnerLoop(){return ownerLoop_;}
     protected:
     private:
         int                 connfd_;
@@ -45,6 +53,7 @@ class TcpConnection:public std::enable_shared_from_this<TcpConnection>
         std::unique_ptr<Channel> channel_;
         CallBackFun         newConnectionCB_;
         MessageCallBackFun  messageRecvCB_;
+        CallBackFun         writeCompleteCB_;
         CallBackFun         closeCB_;
         NetBuffer           inputBuffer_;
         NetBuffer           outputBuffer_;

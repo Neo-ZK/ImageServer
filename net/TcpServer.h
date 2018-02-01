@@ -22,14 +22,19 @@ class TcpServer
     typedef std::function<void(TcpConnectionPtr,NetBuffer*)> MessageCallBackFun;
     typedef std::map<int,TcpConnectionPtr>ConnectionMap;
     public:
-        TcpServer(CallBackFun newConnCB,MessageCallBackFun messageCB,int threadNum,EventLoop* baseLoop);
+        TcpServer(CallBackFun newConnCB,
+                  MessageCallBackFun messageCB,
+                  int threadNum,EventLoop* baseLoop);
         ~TcpServer();
         void newConnection(int connfd);
+        void destroyConnection(TcpConnectionPtr conn);
+        void setwriteCompleteCB(CallBackFun writeCompleteCB){writeCompleteCB_ = writeCompleteCB;}
     protected:
     private:
-        EventLoop*           baseLoop_; //use to process accept action
+        EventLoop*          baseLoop_; //use to process accept action
         CallBackFun         newConnCB_;
         MessageCallBackFun  messageCB_;
+        CallBackFun         writeCompleteCB_;
         std::unique_ptr<Acceptor>               acceptor_;
         std::unique_ptr<EventLoopThreadPool>    eventLoopThreadPool_;
         ConnectionMap       connectionMap_;//use to keep TcpConnection alive when connection is aviliable
