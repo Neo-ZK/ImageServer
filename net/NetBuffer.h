@@ -29,7 +29,8 @@ class NetBuffer
         void getSpace(int len);
         void retrieve(int len);
         void retrieveAll();
-        std::string retrieveAsString(int len);
+        std::string retrieveAsString(int len); //this function will drop data which length is len
+        std::string getAsString(int len); // this function only read len data from begin, it won't drop data
     protected:
     private:
         size_t prependSize_;

@@ -4,6 +4,7 @@
 
 #include<mysql.h>
 #include<assert.h>
+#include<string>
 #include "../log/Logger.h"
 
 
@@ -20,6 +21,8 @@ class MysqlDB
         bool sqlDelete(const char* sql);
         bool sqlModify(const char* sql);
         bool sqlQuery(const char* sql);
+        std::string getPassword(const char* usr_name);
+        std::string getLocation(const char* usr_name);
 
     protected:
     private:

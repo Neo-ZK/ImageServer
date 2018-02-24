@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <stdio.h>
 #include "thread/CurrentThread.h"
@@ -5,7 +6,7 @@
 #include "log/LogFile.h"
 #include "log/Logger.h"
 #include "log/AsyncLogger.h"
-#include "server/Echo.h"
+#include "server/ImageServer.h"
 #include <unistd.h>
 #include <sys/time.h>
 using namespace std;
@@ -26,7 +27,11 @@ int main()
     g_AsyncLogger->start();
     //out = &output;
     ZK_ImageServer::net::EventLoop baseLoop;
-    ZK_ImageServer::server::Echo echo(&baseLoop);
+    ZK_ImageServer::server::ImageServer imageServer(&baseLoop);
     baseLoop.loop();
     return 0;
 }
+
+
+
+

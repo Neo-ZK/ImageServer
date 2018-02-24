@@ -100,3 +100,10 @@ std::string ZK_ImageServer::net::NetBuffer::retrieveAsString(int len)
     retrieve(len);
     return temp;
 }
+
+std::string ZK_ImageServer::net::NetBuffer::getAsString(int len)
+{
+    assert(len <= readableByte());
+    std::string temp(readBegin(),len);
+    return temp;
+}

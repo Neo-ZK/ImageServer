@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include <iostream>
+#include <fstream>
 #include <sys/socket.h>
 #include <string>
 #include <string.h>
@@ -22,11 +23,13 @@ class Client
         void start();
         int usrLogging();
         int usrRegister();
+        int usrUpload(const char* location);
     protected:
     private:
         int sockfd_;
         struct sockaddr_in serverAddr_;
         const int defaultPort_;
+        int state_;//0 means not Logging,1 means has been Log in
 
 };
 

@@ -84,9 +84,36 @@ bool ZK_ImageServer::database::MysqlDB::sqlQuery(const char* sql)
             resultRowNum_ = mysql_num_rows(resultPtr_);
             field_ = mysql_fetch_field(resultPtr_);
             resultRowData_ = mysql_fetch_row(resultPtr_);
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
+std::string ZK_ImageServer::database::MysqlDB::getPassword(const char* usrName)
+{
+    std::string sql;
+    std::string password;
+    sql += "SELECT usr_password FROM BasicInfoTable where usr_name='";
+    sql += usrName;
+    sql += "'";
+    if(sqlQuery(sql.c_str()))
+    {
+        password = resultRowData_[0];
+    }
+    return password;
+}
 
+std::string ZK_ImageServer::database::MysqlDB::getLocation(const char* usrName)
+{
+    std::string sql;
+    std::string loaction;
+    sql += "SELECT usr_location FROM BasicInfoTable where usr_name='";
+    sql += usrName;
+    sql += "'";
+    if(sqlQuery(sql.c_str()))
+    {
+        loaction = resultRowData_[0];
+    }
+    return loaction;
+}
