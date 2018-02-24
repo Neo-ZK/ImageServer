@@ -1,0 +1,42 @@
+#include "MysqlDB.h"
+
+ZK_ImageServer::database::MysqlDB::MysqlDB():
+resultPtr_(NULL),
+field_(NULL),
+resultRowNum_(0),
+resultColNum_(0),
+resultTag_(0)
+{
+    mysql_init(&conn_);
+    assert(mysql_real_connect(&conn_,"localhost","root","","ImageServerDB",0,NULL,CLIENT_FOUND_ROWS));
+    LOG_TRACE << "success connect to database";
+}
+
+ZK_ImageServer::database::MysqlDB::~MysqlDB()
+{
+    mysql_close(&conn_);
+}
+
+bool ZK_ImageServer::database::MysqlDB::sqlQuery(const char* sql)
+{
+    resultTag_ = mysql_query(&conn_,sql);
+    if(resultTag_)
+    {
+        LOG_ERROR << "query database false";
+        return false;
+    }
+    else
+    {
+        LOG_INFO << "query data from database ImageServerDB";
+        resultPtr_ = mysql_store_result(&conn_);
+        if(!resultPtr_)
+        {
+            LOG_INFO << "no information in database of this action query";
+        }
+        else
+        {
+            resultColNum_ = mysql_num_fields(resultPtr_);
+        }
+    }
+    return true;
+}
